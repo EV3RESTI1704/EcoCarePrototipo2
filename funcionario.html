@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoCare | Área do funcionário</title>
+    <meta name="description" content="Painel administrativo do EcoCare para gerenciar doações e itens necessários." />
+    <link rel="stylesheet" href="funcionario.css" />
+  </head>
+  <body>
+    <header class="admin-header">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">E</span>
+        <span>EcoCare</span>
+      </a>
+      <a class="back-link" href="index.html">Voltar para o site</a>
+    </header>
+
+    <main class="admin-shell">
+      <section class="intro" aria-labelledby="admin-title">
+        <div>
+          <p class="eyebrow">Área do funcionário</p>
+          <h1 id="admin-title">Gestão de doações e necessidades</h1>
+        </div>
+        <button class="button" type="button" id="clear-completed">Limpar concluídas</button>
+      </section>
+
+      <section class="summary-grid" aria-label="Resumo administrativo">
+        <article>
+          <span>Total de doações</span>
+          <strong id="total-donations">0</strong>
+        </article>
+        <article>
+          <span>Pendentes</span>
+          <strong id="pending-donations">0</strong>
+        </article>
+        <article>
+          <span>Retiradas</span>
+          <strong id="pickup-donations">0</strong>
+        </article>
+        <article>
+          <span>Itens ativos</span>
+          <strong id="active-items">0</strong>
+        </article>
+        <article>
+          <span>Empresas</span>
+          <strong id="registered-companies">0</strong>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <section class="panel" aria-labelledby="donations-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Recebidas</p>
+              <h2 id="donations-title">Doações</h2>
+            </div>
+            <select id="status-filter" aria-label="Filtrar doações por status">
+              <option value="todas">Todas</option>
+              <option value="pendente">Pendentes</option>
+              <option value="em contato">Em contato</option>
+              <option value="concluida">Concluídas</option>
+            </select>
+          </div>
+          <div class="donation-list" id="donation-list"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="items-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Necessidades</p>
+              <h2 id="items-title">Cadastrar item</h2>
+            </div>
+          </div>
+          <form id="item-form" novalidate>
+            <div class="field">
+              <label for="item-name">Item necessário</label>
+              <input id="item-name" name="name" type="text" required />
+              <small class="error-message"></small>
+            </div>
+            <div class="field">
+              <label for="item-category">Categoria</label>
+              <select id="item-category" name="category" required>
+                <option value="">Selecione</option>
+                <option>Alimentação</option>
+                <option>Higiene</option>
+                <option>Limpeza</option>
+                <option>Roupas</option>
+                <option>Educação</option>
+              </select>
+              <small class="error-message"></small>
+            </div>
+            <div class="field">
+              <label for="item-quantity">Quantidade ou prioridade</label>
+              <input id="item-quantity" name="quantity" type="text" required />
+              <small class="error-message"></small>
+            </div>
+            <div class="field">
+              <label for="item-image">Imagem local ou URL</label>
+              <input id="item-image" name="image" type="text" placeholder="donation-supplies.png" />
+            </div>
+            <button class="button" type="submit">Adicionar item</button>
+          </form>
+
+          <div class="item-list" id="item-list"></div>
+        </section>
+
+        <section class="panel company-panel" aria-labelledby="companies-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Fiscal</p>
+              <h2 id="companies-title">Empresas cadastradas</h2>
+            </div>
+            <select id="company-status-filter" aria-label="Filtrar empresas por status">
+              <option value="todas">Todas</option>
+              <option value="pendente">Pendentes</option>
+              <option value="aprovada">Aprovadas</option>
+              <option value="reprovada">Reprovadas</option>
+            </select>
+          </div>
+          <div class="company-list" id="company-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="funcionario.js"></script>
+  </body>
+</html>

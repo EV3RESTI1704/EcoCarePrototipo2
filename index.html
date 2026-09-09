@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoCare | Doações para casas de recuperação</title>
+    <meta
+      name="description"
+      content="EcoCare conecta doadores a casas de recuperação, organizando necessidades atuais e interesses de doação."
+    />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="page-alert" id="company-alert" role="status" aria-live="polite" hidden>
+      Empresa cadastrada com sucesso. A equipe EcoCare fará a conferência dos dados fiscais.
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="EcoCare - página inicial">
+        <span class="brand-mark" aria-hidden="true">E</span>
+        <span>EcoCare</span>
+      </a>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#casas">Casas</a>
+        <a href="#doacoes">Doações</a>
+        <a href="#impacto">Impacto</a>
+        <a href="empresa.html">Empresa</a>
+        <a href="funcionario.html">Funcionário</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="inicio" aria-labelledby="hero-title">
+        <div class="hero-content">
+          <p class="eyebrow">Rede de apoio e cuidado</p>
+          <h1 id="hero-title">Doações certas chegam mais rápido a quem precisa recomeçar.</h1>
+          <p>
+            Conheça casas de recuperação atendidas, veja necessidades atuais e registre
+            seu interesse em ajudar de forma simples.
+          </p>
+          <div class="hero-actions">
+            <button class="button button-primary" type="button" data-open-donation>
+              Quero doar
+            </button>
+            <a class="button button-secondary" href="#doacoes">Ver necessidades</a>
+            <a class="button button-secondary" href="empresa.html">Cadastrar empresa</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section houses-section" id="casas" aria-labelledby="houses-title">
+        <div class="section-heading">
+          <p class="eyebrow">Casas atendidas</p>
+          <h2 id="houses-title">Estruturas que acolhem pessoas em recuperação</h2>
+          <p>
+            O EcoCare organiza informações para que cada casa possa comunicar suas
+            prioridades com clareza e receber apoio no momento certo.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-panel">
+            <img src="recovery-house.png" alt="Casa de recuperação com jardim e varanda acolhedora" />
+            <div>
+              <h3>Ambientes de cuidado</h3>
+              <p>
+                Casas parceiras oferecem rotina, acompanhamento e espaço seguro para
+                reconstrução de vínculos.
+              </p>
+            </div>
+          </article>
+
+          <article class="feature-panel">
+            <img src="hero-community2.png" alt="Voluntários organizando doações em uma sala comunitária" />
+            <div>
+              <h3>Necessidades sempre visíveis</h3>
+              <p>
+                Funcionários atualizam os itens prioritários para orientar doadores e
+                evitar desperdício.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section donation-section" id="doacoes" aria-labelledby="donations-title">
+        <div class="donation-layout">
+          <div>
+            <p class="eyebrow">Doações</p>
+            <h2 id="donations-title">Itens em destaque para esta semana</h2>
+            <p>
+              As necessidades abaixo são carregadas a partir do painel do funcionário.
+              Quando não houver cadastro, mostramos uma lista inicial para orientar a campanha.
+            </p>
+            <button class="button button-primary" type="button" data-open-donation>
+              Demonstrar interesse
+            </button>
+          </div>
+
+          <div class="carousel" aria-label="Imagens de doações">
+            <div class="carousel-frame">
+              <img id="carousel-image" src="donation-supplies.png" alt="Itens de doação organizados em caixas" />
+            </div>
+            <div class="carousel-controls">
+              <button type="button" id="prev-slide" aria-label="Imagem anterior">&#8249;</button>
+              <span id="carousel-counter" aria-live="polite">1 de 3</span>
+              <button type="button" id="next-slide" aria-label="Próxima imagem">&#8250;</button>
+            </div>
+          </div>
+
+          <aside class="needed-card" aria-labelledby="needed-title">
+            <h3 id="needed-title">Itens necessários</h3>
+            <ul class="needed-list" id="needed-list"></ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section impact-section" id="impacto" aria-labelledby="impact-title">
+        <div class="section-heading">
+          <p class="eyebrow">Impacto</p>
+          <h2 id="impact-title">Pequenas entregas sustentam grandes rotinas</h2>
+        </div>
+
+        <div class="impact-grid">
+          <article>
+            <strong id="donation-count">0</strong>
+            <span>interesses registrados neste navegador</span>
+          </article>
+          <article>
+            <strong>4</strong>
+            <span>categorias de itens acompanhadas</span>
+          </article>
+          <article>
+            <strong>2</strong>
+            <span>formas de entrega para facilitar a doação</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section blog-section" aria-labelledby="blog-title">
+        <div class="section-heading">
+          <p class="eyebrow">Conteúdo</p>
+          <h2 id="blog-title">Informação também é cuidado</h2>
+        </div>
+        <div class="blog-grid">
+          <article>
+            <span>Guia</span>
+            <h3>Como separar itens para doação</h3>
+            <p>Prefira produtos dentro da validade, embalagens íntegras e roupas limpas.</p>
+          </article>
+          <article>
+            <span>Rotina</span>
+            <h3>Por que itens recorrentes importam</h3>
+            <p>Alimentos, higiene e limpeza mantêm a casa funcionando todos os dias.</p>
+          </article>
+          <article>
+            <span>Comunidade</span>
+            <h3>Doação com retirada agendada</h3>
+            <p>Quando o volume é maior, o pedido de retirada aproxima doador e equipe.</p>
+          </article>
+          <article>
+            <span>Empresas</span>
+            <h3>Cadastro fiscal para NF-e</h3>
+            <p>Empresas podem informar os dados necessários para organização fiscal da doação.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section history-section" id="historico" aria-labelledby="history-title">
+        <div class="section-heading">
+          <p class="eyebrow">Histórico</p>
+          <h2 id="history-title">Suas doações realizadas</h2>
+          <p>
+            Consulte as doações registradas neste navegador e abra novamente a nota
+            fiscal local de cada contribuição confirmada.
+          </p>
+        </div>
+        <div class="history-list" id="history-list"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>EcoCare</span>
+      <button class="link-button" type="button" data-open-donation>Registrar doação</button>
+    </footer>
+
+    <div class="modal-backdrop" id="donation-modal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="donation-modal-title">
+        <button class="modal-close" type="button" data-close-modal aria-label="Fechar modal">x</button>
+        <h2 id="donation-modal-title">Registrar interesse em doar</h2>
+        <form id="donation-form" novalidate>
+          <div class="field">
+            <label for="donor-name">Nome</label>
+            <input id="donor-name" name="name" type="text" autocomplete="name" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="donor-contact">Contato</label>
+            <input id="donor-contact" name="contact" type="text" autocomplete="tel" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="donation-type">Forma de ajuda</label>
+            <select id="donation-type" name="type" required>
+              <option value="">Selecione</option>
+              <option>Alimentos</option>
+              <option>Higiene pessoal</option>
+              <option>Limpeza</option>
+              <option>Roupas e cobertores</option>
+              <option>Materiais educativos</option>
+            </select>
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="donation-quantity">Quantidade aproximada</label>
+            <input id="donation-quantity" name="quantity" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field field-full">
+            <label for="donation-message">Mensagem</label>
+            <textarea id="donation-message" name="message" rows="4"></textarea>
+          </div>
+          <button class="button button-primary field-full" type="submit">Enviar interesse</button>
+        </form>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="delivery-modal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="delivery-modal-title">
+        <button class="modal-close" type="button" data-close-delivery aria-label="Fechar modal">x</button>
+        <h2 id="delivery-modal-title">Como deseja finalizar?</h2>
+        <div class="delivery-choice">
+          <button class="choice-card" type="button" id="collection-point">
+            <strong>Entregar em ponto de coleta</strong>
+            <span>Veja o endereço oficial para levar os itens.</span>
+          </button>
+          <button class="choice-card" type="button" id="request-pickup">
+            <strong>Solicitar retirada</strong>
+            <span>Informe endereço, data e horário para combinarmos a busca.</span>
+          </button>
+        </div>
+        <section class="collection-address" id="collection-address" hidden aria-labelledby="collection-title">
+          <h3 id="collection-title">Escolha um endereço para entrega</h3>
+          <fieldset class="collection-options">
+            <legend>Pontos de coleta disponíveis</legend>
+            <label class="collection-option">
+              <input type="radio" name="collectionPoint" value="central" checked />
+              <span>
+                <strong>EcoCare - Ponto de coleta central</strong>
+                Rua das Acácias, 245 - Jardim Esperança, São Paulo/SP
+                <small>Segunda a sexta, das 9h às 17h</small>
+              </span>
+            </label>
+            <label class="collection-option">
+              <input type="radio" name="collectionPoint" value="norte" />
+              <span>
+                <strong>Unidade Norte - Casa Esperança</strong>
+                Avenida das Palmeiras, 880 - Santana, São Paulo/SP
+                <small>Terça, quinta e sábado, das 8h às 14h</small>
+              </span>
+            </label>
+            <label class="collection-option">
+              <input type="radio" name="collectionPoint" value="sul" />
+              <span>
+                <strong>Unidade Sul - Espaço Recomeço</strong>
+                Rua Campo Belo, 1320 - Santo Amaro, São Paulo/SP
+                <small>Segunda a sexta, das 10h às 16h</small>
+              </span>
+            </label>
+            <label class="collection-option">
+              <input type="radio" name="collectionPoint" value="leste" />
+              <span>
+                <strong>Unidade Leste - Apoio Comunitário</strong>
+                Rua Itaquera, 510 - Vila Carmosina, São Paulo/SP
+                <small>Quarta e sexta, das 9h às 15h</small>
+              </span>
+            </label>
+          </fieldset>
+          <button class="button button-primary" type="button" id="confirm-collection">
+            Confirmar entrega neste endereço
+          </button>
+        </section>
+        <form id="pickup-form" class="pickup-form" hidden novalidate>
+          <div class="field field-full">
+            <label for="pickup-address">Endereço completo</label>
+            <input id="pickup-address" name="address" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="pickup-date">Data</label>
+            <input id="pickup-date" name="date" type="date" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="pickup-time">Horário</label>
+            <input id="pickup-time" name="time" type="time" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="pickup-reference">Ponto de referência</label>
+            <input id="pickup-reference" name="reference" type="text" />
+          </div>
+          <div class="field">
+            <label for="pickup-notes">Observações</label>
+            <input id="pickup-notes" name="notes" type="text" />
+          </div>
+          <button class="button button-primary field-full" type="submit">Confirmar retirada</button>
+        </form>
+        <p class="success-message" id="delivery-feedback" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="receipt-modal" hidden>
+      <section class="modal receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+        <button class="modal-close" type="button" data-close-receipt aria-label="Fechar nota fiscal">x</button>
+        <section class="donation-receipt" id="donation-receipt" aria-labelledby="receipt-title">
+          <div class="receipt-header">
+            <div>
+              <p class="eyebrow">Comprovante fiscal</p>
+              <h3 id="receipt-title">Nota de doação EcoCare</h3>
+            </div>
+            <strong id="receipt-number"></strong>
+          </div>
+          <dl class="receipt-grid">
+            <div>
+              <dt>Código de retirada</dt>
+              <dd id="receipt-code"></dd>
+            </div>
+            <div>
+              <dt>Doador</dt>
+              <dd id="receipt-donor"></dd>
+            </div>
+            <div>
+              <dt>Contato</dt>
+              <dd id="receipt-contact"></dd>
+            </div>
+            <div>
+              <dt>Itens doados</dt>
+              <dd id="receipt-items"></dd>
+            </div>
+            <div>
+              <dt>Entrega</dt>
+              <dd id="receipt-delivery"></dd>
+            </div>
+            <div>
+              <dt>Data de emissão</dt>
+              <dd id="receipt-issued-at"></dd>
+            </div>
+          </dl>
+          <p class="receipt-note">
+            Este documento é um comprovante local de intenção de doação. A emissão de NF-e oficial
+            depende de integração fiscal autorizada.
+          </p>
+          <button class="button button-secondary receipt-print" type="button" id="print-receipt">
+            Imprimir comprovante
+          </button>
+        </section>
+      </section>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoCare | Cadastro de empresa</title>
+    <meta
+      name="description"
+      content="Cadastro fiscal de empresas parceiras do EcoCare para organização de dados necessários à NF-e."
+    />
+    <link rel="stylesheet" href="empresa.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">E</span>
+        <span>EcoCare</span>
+      </a>
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="index.html#casas">Casas</a>
+        <a href="index.html#doacoes">Doações</a>
+        <a href="funcionario.html">Funcionário</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="company-hero" aria-labelledby="company-title">
+        <div>
+          <p class="eyebrow">Cadastro fiscal</p>
+          <h1 id="company-title">Empresa parceira EcoCare</h1>
+          <p>
+            Informe os dados cadastrais e fiscais da empresa para que a equipe possa
+            organizar a documentação da doação e preparar o processo de NF-e.
+          </p>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="form-title">
+        <div class="notice" role="note">
+          Este cadastro não emite NF-e automaticamente. A emissão oficial depende de
+          certificado digital, autorização da SEFAZ e integração fiscal apropriada.
+        </div>
+
+        <form id="company-form" novalidate>
+          <div class="form-heading">
+            <p class="eyebrow">Dados da empresa</p>
+            <h2 id="form-title">Informações para cadastro</h2>
+          </div>
+
+          <div class="field">
+            <label for="company-cnpj">CNPJ</label>
+            <input id="company-cnpj" name="cnpj" type="text" inputmode="numeric" maxlength="18" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-state-registration">Inscrição estadual</label>
+            <input id="company-state-registration" name="stateRegistration" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-legal-name">Razão social</label>
+            <input id="company-legal-name" name="legalName" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-trade-name">Nome fantasia</label>
+            <input id="company-trade-name" name="tradeName" type="text" />
+          </div>
+          <div class="field">
+            <label for="company-tax-regime">Regime tributário</label>
+            <select id="company-tax-regime" name="taxRegime" required>
+              <option value="">Selecione</option>
+              <option>Simples Nacional</option>
+              <option>Lucro Presumido</option>
+              <option>Lucro Real</option>
+              <option>MEI</option>
+            </select>
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-cnae">CNAE principal</label>
+            <input id="company-cnae" name="cnae" type="text" placeholder="Ex.: 47.89-0-99" />
+          </div>
+          <div class="field">
+            <label for="company-email">E-mail fiscal</label>
+            <input id="company-email" name="email" type="email" autocomplete="email" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-phone">Telefone</label>
+            <input id="company-phone" name="phone" type="tel" autocomplete="tel" required />
+            <small class="error-message"></small>
+          </div>
+
+          <div class="form-heading field-full">
+            <p class="eyebrow">Endereço fiscal</p>
+            <h2>Localização da empresa</h2>
+          </div>
+
+          <div class="field">
+            <label for="company-zip">CEP</label>
+            <input id="company-zip" name="zipCode" type="text" inputmode="numeric" maxlength="9" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-state">UF</label>
+            <select id="company-state" name="state" required>
+              <option value="">Selecione</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option>SP</option><option>SE</option><option>TO</option>
+            </select>
+            <small class="error-message"></small>
+          </div>
+          <div class="field field-wide">
+            <label for="company-street">Logradouro</label>
+            <input id="company-street" name="street" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-number">Número</label>
+            <input id="company-number" name="number" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-district">Bairro</label>
+            <input id="company-district" name="district" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="company-city">Cidade</label>
+            <input id="company-city" name="city" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field field-full">
+            <label for="company-complement">Complemento</label>
+            <input id="company-complement" name="complement" type="text" />
+          </div>
+
+          <div class="form-heading field-full">
+            <p class="eyebrow">Responsável</p>
+            <h2>Contato para conferência</h2>
+          </div>
+
+          <div class="field">
+            <label for="responsible-name">Nome do responsável</label>
+            <input id="responsible-name" name="responsibleName" type="text" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="responsible-role">Cargo</label>
+            <input id="responsible-role" name="responsibleRole" type="text" required />
+            <small class="error-message"></small>
+          </div>
+
+          <button class="button field-full" type="submit">Enviar cadastro</button>
+          <p class="success-message field-full" id="company-feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="empresa.js"></script>
+  </body>
+</html>
