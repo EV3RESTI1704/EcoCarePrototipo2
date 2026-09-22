@@ -1,13 +1,30 @@
 const DONATIONS_KEY = "ecocareDonations";
 const ITEMS_KEY = "ecocareNeededItems";
 const COMPANIES_KEY = "ecocareCompanies";
+const STOCK_KEY = "ecocareStock";
+const EMPLOYEES_KEY = "ecocareEmployees";
+const EMPLOYEE_SESSION_KEY = "ecocareEmployeeSession";
 
 const itemForm = document.getElementById("item-form");
+const employeeForm = document.getElementById("employee-form");
 const donationList = document.getElementById("donation-list");
 const itemList = document.getElementById("item-list");
 const companyList = document.getElementById("company-list");
+const stockList = document.getElementById("stock-list");
+const employeeList = document.getElementById("employee-list");
+const employeeFeedback = document.getElementById("employee-feedback");
 const statusFilter = document.getElementById("status-filter");
-const companyStatusFilter = document.getElementById("company-status-filter");
+const adminTabs = document.querySelectorAll("[data-admin-tab]");
+const adminPanels = document.querySelectorAll(".admin-tab-panel");
+
+const defaultEmployee = {
+  id: "default-admin",
+  name: "Administrador EcoCare",
+  email: "admin@ecocare.local",
+  password: "admin123",
+  role: "Administrador",
+  createdAt: new Date().toISOString(),
+};
 
 function createId() {
   if (globalThis.crypto?.randomUUID) {
@@ -28,6 +45,36 @@ function readStorage(key) {
 
 function writeStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
+}
+
+function readSession() {
+  try {
+    return JSON.parse(localStorage.getItem(EMPLOYEE_SESSION_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function ensureDefaultEmployee() {
+  const employees = readStorage(EMPLOYEES_KEY);
+  const hasDefaultEmployee = employees.some((employee) => employee.email === defaultEmployee.email);
+
+  if (!hasDefaultEmployee) {
+    writeStorage(EMPLOYEES_KEY, [defaultEmployee, ...employees]);
+  }
+}
+
+function requireEmployeeSession() {
+  ensureDefaultEmployee();
+  const session = readSession();
+
+  if (!session?.employeeId) {
+    window.location.href = "login.html";
+    return null;
+  }
+
+  document.getElementById("session-employee-name").textContent = session.name;
+  return session;
 }
 
 function formatDate(value) {
@@ -61,6 +108,8 @@ function updateSummary() {
   const donations = readStorage(DONATIONS_KEY);
   const items = readStorage(ITEMS_KEY);
   const companies = readStorage(COMPANIES_KEY);
+  const stock = readStorage(STOCK_KEY);
+  const employees = readStorage(EMPLOYEES_KEY);
 
   document.getElementById("total-donations").textContent = donations.length;
   document.getElementById("pending-donations").textContent = donations.filter(
@@ -71,6 +120,28 @@ function updateSummary() {
   ).length;
   document.getElementById("active-items").textContent = items.length;
   document.getElementById("registered-companies").textContent = companies.length;
+  document.getElementById("stock-total").textContent = stock.length;
+  document.getElementById("employee-total").textContent = employees.length;
+}
+
+function getDonationAmount(donation) {
+  if (typeof donation.quantityAmount === "number") {
+    return donation.quantityAmount;
+  }
+
+  const parsedAmount = Number.parseFloat(String(donation.quantity || "").replace(",", "."));
+  return Number.isFinite(parsedAmount) ? parsedAmount : 0;
+}
+
+function getDonationUnit(donation) {
+  if (donation.quantityUnit) {
+    return donation.quantityUnit;
+  }
+
+  const quantityText = String(donation.quantity || "");
+  if (quantityText.includes("kg")) return "kg";
+  if (quantityText.includes("L")) return "L";
+  return "un";
 }
 
 function renderDonations() {
@@ -152,8 +223,87 @@ function renderDonations() {
     });
 
     entry.append(actions);
+
+    if (donation.receipt) {
+      entry.append(createStockDropForm(donation));
+    }
+
     donationList.append(entry);
   });
+}
+
+function createStockDropForm(donation) {
+  const wrapper = document.createElement("div");
+  const status = document.createElement("p");
+
+  status.className = "stock-status";
+
+  if (donation.stockEntryId) {
+    status.textContent = "Baixa realizada. Item já inserido no estoque.";
+    wrapper.append(status);
+    return wrapper;
+  }
+
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+
+  form.className = "stock-drop-form";
+  input.type = "text";
+  input.name = "invoiceCode";
+  input.placeholder = "Código da NF";
+  input.setAttribute("aria-label", `Código da NF para dar baixa na doação ${donation.receipt.number}`);
+  button.type = "submit";
+  button.textContent = "Dar baixa no estoque";
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const invoiceCode = input.value.trim().toUpperCase();
+    const expectedCode = donation.receipt.number.toUpperCase();
+
+    if (invoiceCode !== expectedCode) {
+      status.textContent = "Código inválido. Informe o número da NF de doação.";
+      return;
+    }
+
+    addDonationToStock(donation.id);
+  });
+
+  form.append(input, button);
+  wrapper.append(form, status);
+  return wrapper;
+}
+
+function addDonationToStock(donationId) {
+  const donations = readStorage(DONATIONS_KEY);
+  const donation = donations.find((item) => item.id === donationId);
+
+  if (!donation || !donation.receipt || donation.stockEntryId) {
+    return;
+  }
+
+  const stockEntry = {
+    id: createId(),
+    donationId: donation.id,
+    invoiceCode: donation.receipt.number,
+    companyId: donation.companyId || null,
+    companyName: donation.companyName || "Sem empresa vinculada",
+    classification: donation.type,
+    amount: getDonationAmount(donation),
+    unit: getDonationUnit(donation),
+    donorName: donation.name,
+    createdAt: new Date().toISOString(),
+  };
+
+  const stock = readStorage(STOCK_KEY);
+  writeStorage(STOCK_KEY, [stockEntry, ...stock]);
+  writeStorage(
+    DONATIONS_KEY,
+    donations.map((item) =>
+      item.id === donation.id ? { ...item, status: "concluida", stockEntryId: stockEntry.id } : item
+    )
+  );
+  renderPage();
 }
 
 function updateDonationStatus(id, status) {
@@ -213,22 +363,18 @@ function renderItems() {
 
 function renderCompanies() {
   const companies = readStorage(COMPANIES_KEY);
-  const selectedStatus = companyStatusFilter.value;
-  const visibleCompanies = companies.filter(
-    (company) => selectedStatus === "todas" || company.status === selectedStatus
-  );
 
   companyList.innerHTML = "";
 
-  if (!visibleCompanies.length) {
+  if (!companies.length) {
     const empty = document.createElement("p");
     empty.className = "empty";
-    empty.textContent = "Nenhuma empresa encontrada para este filtro.";
+    empty.textContent = "Nenhuma empresa cadastrada.";
     companyList.append(empty);
     return;
   }
 
-  visibleCompanies.forEach((company) => {
+  companies.forEach((company) => {
     const entry = document.createElement("article");
     entry.className = "company-entry";
 
@@ -238,18 +384,15 @@ function renderCompanies() {
     const meta = document.createElement("div");
     const cnpj = document.createElement("span");
     const date = document.createElement("span");
-    const badge = document.createElement("span");
 
     title.textContent = company.legalName;
     meta.className = "meta";
     cnpj.textContent = company.cnpj;
     date.textContent = formatDate(company.createdAt);
-    badge.className = "badge";
-    badge.textContent = company.status;
 
     meta.append(cnpj, date);
     headingGroup.append(title, meta);
-    header.append(headingGroup, badge);
+    header.append(headingGroup);
 
     const details = document.createElement("div");
     details.className = "company-details";
@@ -260,25 +403,93 @@ function renderCompanies() {
     appendDetail(details, "Telefone", company.phone);
     appendDetail(details, "Endereço", formatCompanyAddress(company));
 
+    const previewButton = document.createElement("button");
     const actions = document.createElement("div");
     actions.className = "company-actions";
-    ["pendente", "aprovada", "reprovada"].forEach((status) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = status;
-      button.className = company.status === status ? "active" : "";
-      button.addEventListener("click", () => updateCompanyStatus(company.id, status));
-      actions.append(button);
-    });
-
-    const previewButton = document.createElement("button");
     previewButton.type = "button";
-    previewButton.textContent = "Gerar prévia NF-e";
+    previewButton.textContent = "Ver prévia NF-e";
     previewButton.addEventListener("click", () => renderInvoicePreview(entry, company));
     actions.append(previewButton);
 
     entry.append(header, details, actions);
     companyList.append(entry);
+  });
+}
+
+function renderStock() {
+  const stock = readStorage(STOCK_KEY);
+  stockList.innerHTML = "";
+
+  if (!stock.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = "Nenhum item em estoque. Dê baixa em uma doação confirmada usando o código da NF.";
+    stockList.append(empty);
+    return;
+  }
+
+  const groupedStock = stock.reduce((groups, item) => {
+    const key = `${item.classification}|${item.unit}`;
+    if (!groups[key]) {
+      groups[key] = {
+        classification: item.classification,
+        unit: item.unit,
+        amount: 0,
+        entries: 0,
+      };
+    }
+    groups[key].amount += Number(item.amount) || 0;
+    groups[key].entries += 1;
+    return groups;
+  }, {});
+
+  Object.values(groupedStock).forEach((item) => {
+    const entry = document.createElement("article");
+    const title = document.createElement("h3");
+    const grid = document.createElement("div");
+
+    entry.className = "stock-entry";
+    title.textContent = item.classification;
+    grid.className = "stock-grid";
+    appendDetail(grid, "Quantidade total", `${item.amount} ${item.unit}`);
+    appendDetail(grid, "Classificação", item.classification);
+    appendDetail(grid, "Lançamentos", String(item.entries));
+    appendDetail(grid, "Unidade", item.unit);
+
+    entry.append(title, grid);
+    stockList.append(entry);
+  });
+}
+
+function renderEmployees() {
+  const employees = readStorage(EMPLOYEES_KEY);
+  employeeList.innerHTML = "";
+
+  if (!employees.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = "Nenhum funcionário cadastrado.";
+    employeeList.append(empty);
+    return;
+  }
+
+  employees.forEach((employee) => {
+    const entry = document.createElement("article");
+    const title = document.createElement("h3");
+    const meta = document.createElement("div");
+    const email = document.createElement("span");
+    const role = document.createElement("span");
+    const createdAt = document.createElement("span");
+
+    entry.className = "employee-entry";
+    title.textContent = employee.name;
+    meta.className = "meta";
+    email.textContent = employee.email;
+    role.textContent = employee.role || "Funcionário";
+    createdAt.textContent = formatDate(employee.createdAt);
+    meta.append(email, role, createdAt);
+    entry.append(title, meta);
+    employeeList.append(entry);
   });
 }
 
@@ -319,18 +530,10 @@ function renderInvoicePreview(entry, company) {
   appendDetail(grid, "CNAE", company.cnae || "Não informado");
   appendDetail(grid, "Endereço fiscal", formatCompanyAddress(company));
   appendDetail(grid, "Responsável", `${company.responsible?.name || ""} - ${company.responsible?.role || ""}`);
-  appendDetail(grid, "Status EcoCare", company.status);
+  appendDetail(grid, "Cadastro EcoCare", "Registrado");
 
   preview.append(title, grid);
   entry.append(preview);
-}
-
-function updateCompanyStatus(id, status) {
-  const companies = readStorage(COMPANIES_KEY).map((company) =>
-    company.id === id ? { ...company, status } : company
-  );
-  writeStorage(COMPANIES_KEY, companies);
-  renderPage();
 }
 
 function removeItem(id) {
@@ -349,6 +552,8 @@ function renderPage() {
   renderDonations();
   renderItems();
   renderCompanies();
+  renderStock();
+  renderEmployees();
 }
 
 itemForm.addEventListener("submit", (event) => {
@@ -372,8 +577,61 @@ itemForm.addEventListener("submit", (event) => {
   renderPage();
 });
 
+employeeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  employeeFeedback.textContent = "";
+
+  if (!validateRequiredFields(employeeForm)) {
+    return;
+  }
+
+  const formData = new FormData(employeeForm);
+  const employees = readStorage(EMPLOYEES_KEY);
+  const email = formData.get("email").trim().toLowerCase();
+  const password = formData.get("password");
+  const duplicatedEmployee = employees.some((employee) => employee.email.toLowerCase() === email);
+
+  if (duplicatedEmployee) {
+    setFieldError(document.getElementById("new-employee-email"), "Este e-mail já está cadastrado.");
+    return;
+  }
+
+  if (password.length < 6) {
+    setFieldError(document.getElementById("new-employee-password"), "A senha deve ter pelo menos 6 caracteres.");
+    return;
+  }
+
+  const employee = {
+    id: createId(),
+    name: formData.get("name").trim(),
+    email,
+    password,
+    role: formData.get("role").trim(),
+    createdAt: new Date().toISOString(),
+  };
+
+  writeStorage(EMPLOYEES_KEY, [employee, ...employees]);
+  employeeForm.reset();
+  employeeFeedback.textContent = "Funcionário cadastrado com sucesso.";
+  renderPage();
+});
+
 statusFilter.addEventListener("change", renderDonations);
-companyStatusFilter.addEventListener("change", renderCompanies);
+
+adminTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const targetId = tab.dataset.adminTab;
+
+    adminTabs.forEach((currentTab) => {
+      currentTab.classList.toggle("active", currentTab === tab);
+    });
+
+    adminPanels.forEach((panel) => {
+      panel.hidden = panel.id !== targetId;
+      panel.classList.toggle("active", panel.id === targetId);
+    });
+  });
+});
 
 document.getElementById("clear-completed").addEventListener("click", () => {
   const donations = readStorage(DONATIONS_KEY);
@@ -395,4 +653,11 @@ document.getElementById("clear-completed").addEventListener("click", () => {
   renderPage();
 });
 
-renderPage();
+document.getElementById("logout-button").addEventListener("click", () => {
+  localStorage.removeItem(EMPLOYEE_SESSION_KEY);
+  window.location.href = "login.html";
+});
+
+if (requireEmployeeSession()) {
+  renderPage();
+}

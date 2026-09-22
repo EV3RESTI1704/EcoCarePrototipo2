@@ -13,7 +13,11 @@
         <span class="brand-mark" aria-hidden="true">E</span>
         <span>EcoCare</span>
       </a>
-      <a class="back-link" href="index.html">Voltar para o site</a>
+      <div class="admin-session">
+        <span id="session-employee-name">Funcionário</span>
+        <button class="back-link logout-button" type="button" id="logout-button">Sair</button>
+        <a class="back-link" href="index.html">Voltar para o site</a>
+      </div>
     </header>
 
     <main class="admin-shell">
@@ -46,79 +50,149 @@
           <span>Empresas</span>
           <strong id="registered-companies">0</strong>
         </article>
+        <article>
+          <span>Estoque</span>
+          <strong id="stock-total">0</strong>
+        </article>
+        <article>
+          <span>Funcionários</span>
+          <strong id="employee-total">0</strong>
+        </article>
       </section>
 
+      <nav class="admin-tabs" aria-label="Navegação do painel">
+        <button class="admin-tab active" type="button" data-admin-tab="donations-panel">Doações</button>
+        <button class="admin-tab" type="button" data-admin-tab="companies-panel">Empresas</button>
+        <button class="admin-tab" type="button" data-admin-tab="stock-panel">Estoque</button>
+        <button class="admin-tab" type="button" data-admin-tab="employees-panel">Funcionários</button>
+      </nav>
+
       <section class="workspace">
-        <section class="panel" aria-labelledby="donations-title">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Recebidas</p>
-              <h2 id="donations-title">Doações</h2>
-            </div>
-            <select id="status-filter" aria-label="Filtrar doações por status">
-              <option value="todas">Todas</option>
-              <option value="pendente">Pendentes</option>
-              <option value="em contato">Em contato</option>
-              <option value="concluida">Concluídas</option>
-            </select>
-          </div>
-          <div class="donation-list" id="donation-list"></div>
-        </section>
-
-        <section class="panel" aria-labelledby="items-title">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Necessidades</p>
-              <h2 id="items-title">Cadastrar item</h2>
-            </div>
-          </div>
-          <form id="item-form" novalidate>
-            <div class="field">
-              <label for="item-name">Item necessário</label>
-              <input id="item-name" name="name" type="text" required />
-              <small class="error-message"></small>
-            </div>
-            <div class="field">
-              <label for="item-category">Categoria</label>
-              <select id="item-category" name="category" required>
-                <option value="">Selecione</option>
-                <option>Alimentação</option>
-                <option>Higiene</option>
-                <option>Limpeza</option>
-                <option>Roupas</option>
-                <option>Educação</option>
+        <section class="admin-tab-panel active" id="donations-panel">
+          <section class="panel" aria-labelledby="donations-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Recebidas</p>
+                <h2 id="donations-title">Doações</h2>
+              </div>
+              <select id="status-filter" aria-label="Filtrar doações por status">
+                <option value="todas">Todas</option>
+                <option value="pendente">Pendentes</option>
+                <option value="em contato">Em contato</option>
+                <option value="concluida">Concluídas</option>
               </select>
-              <small class="error-message"></small>
             </div>
-            <div class="field">
-              <label for="item-quantity">Quantidade ou prioridade</label>
-              <input id="item-quantity" name="quantity" type="text" required />
-              <small class="error-message"></small>
-            </div>
-            <div class="field">
-              <label for="item-image">Imagem local ou URL</label>
-              <input id="item-image" name="image" type="text" placeholder="donation-supplies.png" />
-            </div>
-            <button class="button" type="submit">Adicionar item</button>
-          </form>
+            <div class="donation-list" id="donation-list"></div>
+          </section>
 
-          <div class="item-list" id="item-list"></div>
+          <section class="panel" aria-labelledby="items-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Necessidades</p>
+                <h2 id="items-title">Cadastrar item</h2>
+              </div>
+            </div>
+            <form id="item-form" novalidate>
+              <div class="field">
+                <label for="item-name">Item necessário</label>
+                <input id="item-name" name="name" type="text" required />
+                <small class="error-message"></small>
+              </div>
+              <div class="field">
+                <label for="item-category">Categoria</label>
+                <select id="item-category" name="category" required>
+                  <option value="">Selecione</option>
+                  <option>Alimentação</option>
+                  <option>Higiene</option>
+                  <option>Limpeza</option>
+                  <option>Roupas</option>
+                  <option>Educação</option>
+                </select>
+                <small class="error-message"></small>
+              </div>
+              <div class="field">
+                <label for="item-quantity">Quantidade ou prioridade</label>
+                <input id="item-quantity" name="quantity" type="text" required />
+                <small class="error-message"></small>
+              </div>
+              <div class="field">
+                <label for="item-image">Imagem local ou URL</label>
+                <input id="item-image" name="image" type="text" placeholder="donation-supplies.png" />
+              </div>
+              <button class="button" type="submit">Adicionar item</button>
+            </form>
+
+            <div class="item-list" id="item-list"></div>
+          </section>
         </section>
 
-        <section class="panel company-panel" aria-labelledby="companies-title">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Fiscal</p>
-              <h2 id="companies-title">Empresas cadastradas</h2>
+        <section class="admin-tab-panel" id="companies-panel" hidden>
+          <section class="panel company-panel" aria-labelledby="companies-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Fiscal</p>
+                <h2 id="companies-title">Empresas cadastradas</h2>
+              </div>
             </div>
-            <select id="company-status-filter" aria-label="Filtrar empresas por status">
-              <option value="todas">Todas</option>
-              <option value="pendente">Pendentes</option>
-              <option value="aprovada">Aprovadas</option>
-              <option value="reprovada">Reprovadas</option>
-            </select>
-          </div>
-          <div class="company-list" id="company-list"></div>
+            <div class="company-list" id="company-list"></div>
+          </section>
+        </section>
+
+        <section class="admin-tab-panel" id="stock-panel" hidden>
+          <section class="panel stock-panel" aria-labelledby="stock-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Estoque</p>
+                <h2 id="stock-title">Itens doados em estoque</h2>
+              </div>
+            </div>
+            <div class="stock-list" id="stock-list"></div>
+          </section>
+        </section>
+
+        <section class="admin-tab-panel" id="employees-panel" hidden>
+          <section class="panel" aria-labelledby="employee-register-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Acessos</p>
+                <h2 id="employee-register-title">Cadastrar funcionário</h2>
+              </div>
+            </div>
+            <form id="employee-form" novalidate>
+              <div class="field">
+                <label for="new-employee-name">Nome</label>
+                <input id="new-employee-name" name="name" type="text" required />
+                <small class="error-message"></small>
+              </div>
+              <div class="field">
+                <label for="new-employee-email">E-mail</label>
+                <input id="new-employee-email" name="email" type="email" required />
+                <small class="error-message"></small>
+              </div>
+              <div class="field">
+                <label for="new-employee-role">Cargo</label>
+                <input id="new-employee-role" name="role" type="text" required />
+                <small class="error-message"></small>
+              </div>
+              <div class="field">
+                <label for="new-employee-password">Senha</label>
+                <input id="new-employee-password" name="password" type="password" minlength="6" required />
+                <small class="error-message"></small>
+              </div>
+              <button class="button" type="submit">Cadastrar funcionário</button>
+              <p class="success-message" id="employee-feedback" aria-live="polite"></p>
+            </form>
+          </section>
+
+          <section class="panel" aria-labelledby="employee-list-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Equipe</p>
+                <h2 id="employee-list-title">Funcionários cadastrados</h2>
+              </div>
+            </div>
+            <div class="employee-list" id="employee-list"></div>
+          </section>
         </section>
       </section>
     </main>

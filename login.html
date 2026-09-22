@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoCare | Login do funcionário</title>
+    <meta name="description" content="Acesso restrito ao painel administrativo do EcoCare." />
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
+    <main class="login-shell">
+      <section class="login-card" aria-labelledby="login-title">
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">E</span>
+          <span>EcoCare</span>
+        </a>
+        <p class="eyebrow">Área restrita</p>
+        <h1 id="login-title">Login do funcionário</h1>
+        <p>Entre com seu e-mail e senha para acessar o painel administrativo.</p>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="employee-email">E-mail</label>
+            <input id="employee-email" name="email" type="email" autocomplete="email" required />
+            <small class="error-message"></small>
+          </div>
+          <div class="field">
+            <label for="employee-password">Senha</label>
+            <input id="employee-password" name="password" type="password" autocomplete="current-password" required />
+            <small class="error-message"></small>
+          </div>
+          <button class="button" type="submit">Entrar</button>
+          <p class="login-feedback" id="login-feedback" aria-live="polite"></p>
+        </form>
+
+        <div class="first-access">
+          <strong>Primeiro acesso</strong>
+          <span>E-mail: admin@ecocare.local</span>
+          <span>Senha: admin123</span>
+        </div>
+      </section>
+    </main>
+
+    <script src="login.js"></script>
+  </body>
+</html>

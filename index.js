@@ -1,5 +1,7 @@
 const DONATIONS_KEY = "ecocareDonations";
 const ITEMS_KEY = "ecocareNeededItems";
+const COMPANIES_KEY = "ecocareCompanies";
+const ACTIVE_COMPANY_KEY = "ecocareActiveCompanyId";
 
 const fallbackItems = [
   {
@@ -47,13 +49,23 @@ let previousFocus = null;
 const donationModal = document.getElementById("donation-modal");
 const deliveryModal = document.getElementById("delivery-modal");
 const receiptModal = document.getElementById("receipt-modal");
+const companyModal = document.getElementById("company-modal");
+const historyModal = document.getElementById("history-modal");
 const donationForm = document.getElementById("donation-form");
+const donationTypeField = document.getElementById("donation-type");
+const donationQuantityField = document.getElementById("donation-quantity");
+const donationUnitLabel = document.getElementById("donation-unit");
+const donationUnitValue = document.getElementById("donation-unit-value");
 const pickupForm = document.getElementById("pickup-form");
 const collectionAddress = document.getElementById("collection-address");
 const feedback = document.getElementById("delivery-feedback");
 const companyAlert = document.getElementById("company-alert");
 const donationReceipt = document.getElementById("donation-receipt");
 const historyList = document.getElementById("history-list");
+const historyCompanyContext = document.getElementById("history-company-context");
+const companyLoginList = document.getElementById("company-login-list");
+const companyProfileSection = document.getElementById("empresa-cadastrada");
+const companyProfileCard = document.getElementById("company-profile-card");
 
 const collectionPoints = {
   central: {
@@ -78,6 +90,15 @@ const collectionPoints = {
   },
 };
 
+const donationUnits = {
+  Alimentos: "kg",
+  Bebidas: "L",
+  "Higiene pessoal": "un",
+  Limpeza: "un",
+  "Roupas e cobertores": "un",
+  "Materiais educativos": "un",
+};
+
 function createId() {
   if (globalThis.crypto?.randomUUID) {
     return globalThis.crypto.randomUUID();
@@ -99,6 +120,30 @@ function writeStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
 
+function readValue(key) {
+  return localStorage.getItem(key);
+}
+
+function writeValue(key, value) {
+  localStorage.setItem(key, value);
+}
+
+function getActiveCompany() {
+  const companies = readStorage(COMPANIES_KEY, []);
+  const activeCompanyId = readValue(ACTIVE_COMPANY_KEY);
+  return companies.find((company) => company.id === activeCompanyId) || null;
+}
+
+function getVisibleDonations() {
+  const donations = readStorage(DONATIONS_KEY, []);
+  const activeCompany = getActiveCompany();
+  if (!activeCompany) {
+    return [];
+  }
+
+  return donations.filter((donation) => donation.companyId === activeCompany.id);
+}
+
 function createDonationCode() {
   return `RET-${new Date().getFullYear()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
@@ -114,11 +159,77 @@ function showCompanyRegistrationAlert() {
   }
 
   companyAlert.hidden = false;
-  window.history.replaceState({}, document.title, window.location.pathname);
+  window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
 
   window.setTimeout(() => {
     companyAlert.hidden = true;
   }, 6000);
+}
+
+function formatCompanyAddress(company) {
+  const address = company.address || {};
+  return `${address.street || ""}, ${address.number || "s/n"} - ${address.district || ""}, ${
+    address.city || ""
+  }/${address.state || ""} - CEP ${address.zipCode || ""}`;
+}
+
+function appendCompanyProfileDetail(container, label, value) {
+  const detail = document.createElement("span");
+  const title = document.createElement("strong");
+  const text = document.createElement("span");
+
+  title.textContent = label;
+  text.textContent = value || "Não informado";
+  detail.append(title, text);
+  container.append(detail);
+}
+
+function renderCompanyProfile() {
+  const company = getActiveCompany();
+
+  companyProfileCard.innerHTML = "";
+
+  if (!company) {
+    companyProfileSection.hidden = true;
+    return;
+  }
+
+  companyProfileSection.hidden = false;
+
+  const content = document.createElement("div");
+  const title = document.createElement("h3");
+  const subtitle = document.createElement("p");
+  const grid = document.createElement("div");
+  const action = document.createElement("a");
+  const switchButton = document.createElement("button");
+
+  title.textContent = company.legalName;
+  subtitle.textContent = company.tradeName || "Empresa cadastrada para organização fiscal da doação.";
+  grid.className = "company-profile-grid";
+  appendCompanyProfileDetail(grid, "CNPJ", company.cnpj);
+  appendCompanyProfileDetail(grid, "Inscrição estadual", company.stateRegistration);
+  appendCompanyProfileDetail(grid, "Regime tributário", company.taxRegime);
+  appendCompanyProfileDetail(grid, "E-mail fiscal", company.email);
+  appendCompanyProfileDetail(grid, "Telefone", company.phone);
+  appendCompanyProfileDetail(grid, "Endereço fiscal", formatCompanyAddress(company));
+
+  action.className = "button button-primary";
+  action.href = "empresa.html";
+  action.textContent = "Cadastrar outra empresa";
+
+  switchButton.className = "button button-secondary company-switch";
+  switchButton.type = "button";
+  switchButton.textContent = "Trocar empresa";
+  switchButton.addEventListener("click", () => {
+    renderCompanyLogin();
+    openModal(companyModal);
+  });
+
+  content.append(title, subtitle, grid);
+  const actions = document.createElement("div");
+  actions.className = "company-profile-actions";
+  actions.append(switchButton, action);
+  companyProfileCard.append(content, actions);
 }
 
 function renderNeededItems() {
@@ -156,7 +267,8 @@ function renderNeededItems() {
 }
 
 function renderDonationCount() {
-  const count = readStorage(DONATIONS_KEY, []).length;
+  const activeCompany = getActiveCompany();
+  const count = activeCompany ? getVisibleDonations().length : readStorage(DONATIONS_KEY, []).length;
   document.getElementById("donation-count").textContent = String(count);
 }
 
@@ -205,6 +317,12 @@ function setFieldError(field, message) {
   field.setAttribute("aria-invalid", message ? "true" : "false");
 }
 
+function updateDonationUnit() {
+  const unit = donationUnits[donationTypeField.value] || "un";
+  donationUnitLabel.textContent = unit;
+  donationUnitValue.value = unit;
+}
+
 function validateRequiredFields(form) {
   let isValid = true;
   form.querySelectorAll("[required]").forEach((field) => {
@@ -218,16 +336,34 @@ function validateRequiredFields(form) {
   return isValid;
 }
 
+function validateDonationForm() {
+  const isRequiredValid = validateRequiredFields(donationForm);
+  const amount = Number(donationQuantityField.value);
+
+  if (!amount || amount <= 0) {
+    setFieldError(donationQuantityField, "Informe uma quantidade maior que zero.");
+    return false;
+  }
+
+  setFieldError(donationQuantityField, "");
+  return isRequiredValid;
+}
+
 function createDonation(formData) {
   const donations = readStorage(DONATIONS_KEY, []);
+  const activeCompany = getActiveCompany();
   const donation = {
     id: createId(),
+    companyId: activeCompany?.id || null,
+    companyName: activeCompany?.legalName || "",
     createdAt: new Date().toISOString(),
     status: "pendente",
     name: formData.get("name").trim(),
     contact: formData.get("contact").trim(),
     type: formData.get("type"),
-    quantity: formData.get("quantity").trim(),
+    quantityAmount: Number(formData.get("quantityAmount")),
+    quantityUnit: formData.get("quantityUnit"),
+    quantity: `${Number(formData.get("quantityAmount"))} ${formData.get("quantityUnit")}`,
     message: formData.get("message").trim(),
     delivery: null,
     receipt: null,
@@ -288,13 +424,19 @@ function openReceiptModal(donation) {
 }
 
 function renderDonationHistory() {
-  const donations = readStorage(DONATIONS_KEY, []);
+  const activeCompany = getActiveCompany();
+  const donations = getVisibleDonations();
   historyList.innerHTML = "";
+  historyCompanyContext.textContent = activeCompany
+    ? `Histórico vinculado à empresa ${activeCompany.legalName}.`
+    : "Entre em uma empresa para visualizar o histórico de doações e NFs dela.";
 
   if (!donations.length) {
     const empty = document.createElement("p");
     empty.className = "history-empty";
-    empty.textContent = "Nenhuma doação registrada neste navegador.";
+    empty.textContent = activeCompany
+      ? "Nenhuma doação registrada para esta empresa."
+      : "Nenhuma empresa selecionada.";
     historyList.append(empty);
     return;
   }
@@ -335,6 +477,47 @@ function renderDonationHistory() {
   });
 }
 
+function renderCompanyLogin() {
+  const companies = readStorage(COMPANIES_KEY, []);
+  companyLoginList.innerHTML = "";
+
+  if (!companies.length) {
+    const empty = document.createElement("p");
+    empty.className = "history-empty";
+    empty.textContent = "Nenhuma empresa cadastrada neste navegador.";
+    companyLoginList.append(empty);
+    return;
+  }
+
+  companies.forEach((company) => {
+    const entry = document.createElement("article");
+    entry.className = "company-login-entry";
+
+    const content = document.createElement("div");
+    const title = document.createElement("h3");
+    const meta = document.createElement("p");
+    const button = document.createElement("button");
+
+    title.textContent = company.legalName;
+    meta.textContent = `${company.cnpj} - ${company.email}`;
+    button.className = "button button-primary";
+    button.type = "button";
+    button.textContent = "Entrar";
+    button.addEventListener("click", () => {
+      writeValue(ACTIVE_COMPANY_KEY, company.id);
+      renderCompanyProfile();
+      renderDonationCount();
+      renderDonationHistory();
+      closeModal(companyModal);
+      companyProfileSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    content.append(title, meta);
+    entry.append(content, button);
+    companyLoginList.append(entry);
+  });
+}
+
 document.querySelectorAll("[data-open-donation]").forEach((button) => {
   button.addEventListener("click", () => openModal(donationModal));
 });
@@ -342,10 +525,24 @@ document.querySelectorAll("[data-open-donation]").forEach((button) => {
 document.querySelector("[data-close-modal]").addEventListener("click", () => closeModal(donationModal));
 document.querySelector("[data-close-delivery]").addEventListener("click", () => closeModal(deliveryModal));
 document.querySelector("[data-close-receipt]").addEventListener("click", () => closeModal(receiptModal));
+document.querySelector("[data-close-company]").addEventListener("click", () => closeModal(companyModal));
+document.querySelector("[data-close-history]").addEventListener("click", () => closeModal(historyModal));
+
+donationTypeField.addEventListener("change", updateDonationUnit);
+
+document.getElementById("open-company-modal").addEventListener("click", () => {
+  renderCompanyLogin();
+  openModal(companyModal);
+});
+
+document.getElementById("open-history-modal").addEventListener("click", () => {
+  renderDonationHistory();
+  openModal(historyModal);
+});
 
 donationForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (!validateRequiredFields(donationForm)) {
+  if (!validateDonationForm()) {
     return;
   }
 
@@ -426,6 +623,8 @@ document.getElementById("next-slide").addEventListener("click", () => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    if (!historyModal.hidden) closeModal(historyModal);
+    if (!companyModal.hidden) closeModal(companyModal);
     if (!receiptModal.hidden) closeModal(receiptModal);
     if (!deliveryModal.hidden) closeModal(deliveryModal);
     if (!donationModal.hidden) closeModal(donationModal);
@@ -435,5 +634,7 @@ document.addEventListener("keydown", (event) => {
 renderNeededItems();
 renderDonationCount();
 renderDonationHistory();
+renderCompanyProfile();
 updateCarousel();
+updateDonationUnit();
 showCompanyRegistrationAlert();

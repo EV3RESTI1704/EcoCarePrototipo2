@@ -42,11 +42,31 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
+.admin-session {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.admin-session span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .brand,
 .back-link {
   color: var(--green-900);
   text-decoration: none;
   font-weight: 800;
+}
+
+.logout-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .brand {
@@ -131,7 +151,7 @@ select:focus-visible {
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 16px;
   margin: 30px 0;
 }
@@ -139,7 +159,8 @@ select:focus-visible {
 .summary-grid article,
 .panel,
 .donation-entry,
-.item-entry {
+.item-entry,
+.stock-entry {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
@@ -162,11 +183,42 @@ select:focus-visible {
   font-size: 2.2rem;
 }
 
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.admin-tab {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: var(--green-900);
+  background: #fff;
+  font-weight: 900;
+}
+
+.admin-tab.active {
+  color: #fff;
+  background: var(--green-700);
+  border-color: var(--green-700);
+}
+
 .workspace {
+  display: block;
+}
+
+.admin-tab-panel {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(330px, 0.8fr);
   gap: 22px;
   align-items: start;
+}
+
+.admin-tab-panel[hidden] {
+  display: none;
 }
 
 .panel {
@@ -208,7 +260,9 @@ label {
 
 .donation-list,
 .item-list,
-.company-list {
+.company-list,
+.stock-list,
+.employee-list {
   display: grid;
   gap: 14px;
   margin-top: 22px;
@@ -217,6 +271,8 @@ label {
 .donation-entry,
 .item-entry,
 .company-entry,
+.stock-entry,
+.employee-entry,
 .invoice-preview {
   padding: 18px;
 }
@@ -266,6 +322,7 @@ label {
 
 .donation-actions button,
 .company-actions button,
+.stock-drop-form button,
 .remove-item {
   min-height: 38px;
   border: 1px solid var(--line);
@@ -312,12 +369,61 @@ label {
   grid-column: 1 / -1;
 }
 
+.stock-panel {
+  grid-column: 1 / -1;
+}
+
 .company-entry,
+.stock-entry,
+.employee-entry,
 .invoice-preview {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
   box-shadow: var(--shadow);
+}
+
+.employee-entry {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.employee-entry h3 {
+  margin-bottom: 4px;
+}
+
+.success-message {
+  margin: 0;
+  color: var(--green-700);
+  font-weight: 900;
+}
+
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.stock-grid strong {
+  display: block;
+  color: var(--green-900);
+}
+
+.stock-drop-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.stock-status {
+  margin-top: 10px;
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .company-details {
@@ -358,13 +464,14 @@ label {
 
 @media (max-width: 960px) {
   .summary-grid,
-  .workspace,
+  .admin-tab-panel,
   .company-details,
-  .invoice-grid {
+  .invoice-grid,
+  .stock-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .workspace {
+  .admin-tab-panel {
     grid-template-columns: 1fr;
   }
 }
@@ -385,7 +492,9 @@ label {
   .item-entry,
   .company-entry header,
   .company-details,
-  .invoice-grid {
+  .invoice-grid,
+  .stock-grid,
+  .stock-drop-form {
     grid-template-columns: 1fr;
   }
 }

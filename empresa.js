@@ -1,4 +1,5 @@
 const COMPANIES_KEY = "ecocareCompanies";
+const ACTIVE_COMPANY_KEY = "ecocareActiveCompanyId";
 
 const companyForm = document.getElementById("company-form");
 const feedback = document.getElementById("company-feedback");
@@ -120,7 +121,7 @@ companyForm.addEventListener("submit", (event) => {
   const company = {
     id: createId(),
     createdAt: new Date().toISOString(),
-    status: "pendente",
+    status: "cadastrada",
     cnpj,
     stateRegistration: formData.get("stateRegistration").trim(),
     legalName: formData.get("legalName").trim(),
@@ -145,9 +146,10 @@ companyForm.addEventListener("submit", (event) => {
   };
 
   writeStorage(COMPANIES_KEY, [company, ...companies]);
+  localStorage.setItem(ACTIVE_COMPANY_KEY, company.id);
   companyForm.reset();
   feedback.textContent = "Cadastro enviado. Redirecionando para a página inicial...";
   window.setTimeout(() => {
-    window.location.href = "index.html?empresa=cadastrada";
+    window.location.href = "index.html?empresa=cadastrada#empresa-cadastrada";
   }, 700);
 });

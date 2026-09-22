@@ -25,8 +25,9 @@
         <a href="#casas">Casas</a>
         <a href="#doacoes">Doações</a>
         <a href="#impacto">Impacto</a>
-        <a href="empresa.html">Empresa</a>
-        <a href="funcionario.html">Funcionário</a>
+        <button class="nav-button" type="button" id="open-company-modal">Empresa</button>
+        <button class="nav-button" type="button" id="open-history-modal">Histórico</button>
+        <a href="login.html">Funcionário</a>
       </nav>
     </header>
 
@@ -47,6 +48,18 @@
             <a class="button button-secondary" href="empresa.html">Cadastrar empresa</a>
           </div>
         </div>
+      </section>
+
+      <section class="section company-profile-section" id="empresa-cadastrada" hidden aria-labelledby="company-profile-title">
+        <div class="section-heading">
+          <p class="eyebrow">Empresa cadastrada</p>
+          <h2 id="company-profile-title">Dados fiscais recebidos</h2>
+          <p>
+            A empresa abaixo foi cadastrada neste navegador e já está disponível para
+            consulta no painel do funcionário.
+          </p>
+        </div>
+        <article class="company-profile-card" id="company-profile-card"></article>
       </section>
 
       <section class="section houses-section" id="casas" aria-labelledby="houses-title">
@@ -167,17 +180,6 @@
         </div>
       </section>
 
-      <section class="section history-section" id="historico" aria-labelledby="history-title">
-        <div class="section-heading">
-          <p class="eyebrow">Histórico</p>
-          <h2 id="history-title">Suas doações realizadas</h2>
-          <p>
-            Consulte as doações registradas neste navegador e abra novamente a nota
-            fiscal local de cada contribuição confirmada.
-          </p>
-        </div>
-        <div class="history-list" id="history-list"></div>
-      </section>
     </main>
 
     <footer class="footer">
@@ -205,6 +207,7 @@
             <select id="donation-type" name="type" required>
               <option value="">Selecione</option>
               <option>Alimentos</option>
+              <option>Bebidas</option>
               <option>Higiene pessoal</option>
               <option>Limpeza</option>
               <option>Roupas e cobertores</option>
@@ -214,7 +217,11 @@
           </div>
           <div class="field">
             <label for="donation-quantity">Quantidade aproximada</label>
-            <input id="donation-quantity" name="quantity" type="text" required />
+            <div class="quantity-control">
+              <input id="donation-quantity" name="quantityAmount" type="number" min="0.01" step="0.01" required />
+              <span id="donation-unit" aria-live="polite">un</span>
+            </div>
+            <input id="donation-unit-value" name="quantityUnit" type="hidden" value="un" />
             <small class="error-message"></small>
           </div>
           <div class="field field-full">
@@ -356,6 +363,32 @@
             Imprimir comprovante
           </button>
         </section>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="company-modal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="company-modal-title">
+        <button class="modal-close" type="button" data-close-company aria-label="Fechar empresas">x</button>
+        <p class="eyebrow">Empresa</p>
+        <h2 id="company-modal-title">Entrar ou cadastrar empresa</h2>
+        <p>
+          Entre em uma empresa já cadastrada para vincular novas doações e visualizar
+          o histórico específico dela.
+        </p>
+        <div class="company-login-list" id="company-login-list"></div>
+        <a class="button button-primary modal-action" href="empresa.html">Cadastrar nova empresa</a>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="history-modal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
+        <button class="modal-close" type="button" data-close-history aria-label="Fechar histórico">x</button>
+        <p class="eyebrow">Histórico</p>
+        <h2 id="history-modal-title">Doações e NFs</h2>
+        <p id="history-company-context">
+          Selecione uma empresa para visualizar o histórico de doações vinculado a ela.
+        </p>
+        <div class="history-list" id="history-list"></div>
       </section>
     </div>
 
